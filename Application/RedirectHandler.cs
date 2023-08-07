@@ -1,9 +1,9 @@
-﻿using OktaRoutingAutomation.Enums;
-using OktaRoutingAutomation.Extensions;
-using OktaRoutingAutomation.Models;
+﻿using OktaAutomation.Enums;
+using OktaAutomation.Extensions;
+using OktaAutomation.Models;
 using System.Text.RegularExpressions;
 
-namespace OktaRoutingAutomation.Application
+namespace OktaAutomation.Application
 {
     public class RedirectHandler
     {

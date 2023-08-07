@@ -1,9 +1,9 @@
-﻿using OktaRoutingAutomation.Application;
-using OktaRoutingAutomation.Enums;
-using OktaRoutingAutomation.Extensions;
+﻿using OktaAutomation.Application;
+using OktaAutomation.Enums;
+using OktaAutomation.Extensions;
 using System.Linq;
 
-namespace OktaRoutingAutomation
+namespace OktaAutomation
 {
     public class Program
     {

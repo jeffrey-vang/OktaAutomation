@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace OktaRoutingAutomation.Models
+namespace OktaAutomation.Models
 {
     public class Resource
     {

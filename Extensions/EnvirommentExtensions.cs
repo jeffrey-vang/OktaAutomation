@@ -1,4 +1,4 @@
-﻿namespace OktaRoutingAutomation.Extensions
+﻿namespace OktaAutomation.Extensions
 {
     public static class EnvirommentExtensions
     {

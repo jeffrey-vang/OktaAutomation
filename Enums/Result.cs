@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OktaRoutingAutomation.Enums
+namespace OktaAutomation.Enums
 {
     public enum Result
     {

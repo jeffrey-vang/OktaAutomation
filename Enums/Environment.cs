@@ -1,4 +1,4 @@
-﻿namespace OktaRoutingAutomation.Enums
+﻿namespace OktaAutomation.Enums
 {
     public enum Environment
     {
