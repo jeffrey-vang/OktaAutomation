@@ -1,7 +1,6 @@
 ﻿using OktaAutomation.Application;
 using OktaAutomation.Enums;
 using OktaAutomation.Extensions;
-using System.Linq;
 
 namespace OktaAutomation
 {
