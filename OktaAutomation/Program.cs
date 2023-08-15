@@ -21,7 +21,12 @@ namespace OktaAutomation
             var module = "nonprod";
             //var module = "prod";
 
-            var environment = Enums.Environment.Development;
+            // Filters
+            var environmentFilter = Enums.Environment.Development;
+            var resourceFilter = "okta_app_oauth";
+            var nameFilter = "SwaggerUI";
+            var domainFilter = "book";
+
 
             Console.WriteLine($"Running against {module}...");
 
@@ -31,42 +36,21 @@ namespace OktaAutomation
             // Inspect Resources
             var managedResources = resourceHandler.InspectResources(modulePath, outputPath);
             var swaggerResources = managedResources.Resources.Values.Where(x =>
-                x.Type == "okta_app_oauth"
-                && x.Name.Contains("SwaggerUI")
-                && x.Position.FileName.Contains(environment.ToRoutingPrefix(), StringComparison.OrdinalIgnoreCase));
+                x.Type == resourceFilter
+                && x.Name.Contains(nameFilter, StringComparison.OrdinalIgnoreCase)
+                && x.Position.FileName.Contains($"-{domainFilter}", StringComparison.OrdinalIgnoreCase)
+                && x.Position.FileName.Contains(environmentFilter.ToRoutingPrefix(), StringComparison.OrdinalIgnoreCase));
 
-            var allGroupedResources = swaggerResources.OrderBy(x => x.Position.LineNumber).GroupBy(x => x.Position.FileName);
-            var groupedResources = allGroupedResources.Where(x => x.Count() > 1);
-            //var singleResources = allGroupedResources.Where(x => x.Count() == 1).SelectMany(x => x);
-
-            // Process groups with single resources in a single file.
-/*            foreach (var resource in singleResources)
-            {
-                var result = redirectHandler.ApplyRedirect(environment, resource, 0);
-
-                if (result == Result.Success)
-                {
-                    writeCount++;
-
-                }
-                if (result == Result.Failed)
-                {
-                    failedResources++;
-                }
-
-                if (result == Result.Skipped)
-                {
-                    resourcesSkipped++;
-                }
-            }*/
+            var groupedResources = swaggerResources.OrderBy(x => x.Position.LineNumber).GroupBy(x => x.Position.FileName);
 
             // Process groups with multiple resources in a single file - Order by line number.
-            foreach (var resourceGroup in allGroupedResources)
+            foreach (var resourceGroup in groupedResources)
             {
                 var offset = 0;
                 foreach (var resource in resourceGroup)
                 {
-                    var result = redirectHandler.ApplyRedirect(environment, resource, offset);
+                    Console.WriteLine($"Appending redirect for {resource.Name} in {resource.Position.FileName}");
+                    var result = redirectHandler.ApplyRedirect(environmentFilter, resource, offset);
 
                     if (result == Result.Success)
                     {
@@ -90,7 +74,7 @@ namespace OktaAutomation
             Console.WriteLine($"Resource Count: {swaggerResources.Count()}");
             Console.WriteLine($"Failed Resources: {failedResources}");
             Console.WriteLine($"Resources Skipped Because Uri Already Exists: {resourcesSkipped}");
-            Console.WriteLine($"Files With Resources (Expected Files Changed): {allGroupedResources.Count()}");
+            Console.WriteLine($"Files With Resources (Expected Files Changed): {groupedResources.Count()}");
         }
     }
 }

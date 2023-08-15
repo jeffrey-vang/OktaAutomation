@@ -1,11 +1,8 @@
-﻿using Newtonsoft.Json;
-using System.Text.Json.Nodes;
-
-namespace OktaAutomation.Hcl
+﻿namespace OktaAutomation.Hcl
 {
     public class HclHelper
     {
-        public TerraformResource Parse(string content)
+        public TerraformResource ParseResource(string content)
         {
             var resource = new TerraformResource();
 
@@ -17,15 +14,15 @@ namespace OktaAutomation.Hcl
             resource.Name = sections[2].Replace("\"", string.Empty, StringComparison.OrdinalIgnoreCase);
 
             var lifeCycleLine = lines.FirstOrDefault(x => x.Contains("lifecycle"));
-            resource.Lifecycle = this.ParseAttribute(content, lifeCycleLine);
+            resource.Lifecycle = this.ParseAttributes(content, lifeCycleLine);
 
             var attributeLine = lines.First(x => !x.Contains("resource") && !x.Contains("lifecycle"));
-            resource.Attributes = this.ParseAttribute(content, attributeLine);
+            resource.Attributes = this.ParseAttributes(content, attributeLine);
 
             return resource;
         }
 
-        private Dictionary<string, object> ParseAttribute(string content, string startLine)
+        public Dictionary<string, object> ParseAttributes(string content, string startLine)
         {
             var attributes = new Dictionary<string, object>();
 

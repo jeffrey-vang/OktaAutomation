@@ -50,7 +50,6 @@ namespace OktaAutomation.Application
                             // Write Output
                             File.WriteAllLines(resource.Position.FileName, orignalLines);
 
-                            Console.WriteLine($"Appending redirect for {resource.Name} in {resource.Position.FileName}");
                             return Result.Success;
                         }
                     }
@@ -64,7 +63,6 @@ namespace OktaAutomation.Application
                         // Write Output
                         File.WriteAllLines(resource.Position.FileName, orignalLines);
 
-                        Console.WriteLine($"Appending redirect for {resource.Name} in {resource.Position.FileName}");
                         return Result.Success;
                     }
                     lineMark++;

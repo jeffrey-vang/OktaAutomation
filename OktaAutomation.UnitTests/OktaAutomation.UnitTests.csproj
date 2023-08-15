@@ -27,6 +27,9 @@
     <None Update="TestFiles\multiline-input.tf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="TestFiles\hcl-input.tf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="TestFiles\singleline-input.tf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
