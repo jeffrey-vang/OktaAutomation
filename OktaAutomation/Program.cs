@@ -15,17 +15,18 @@ namespace OktaAutomation
             var redirectHandler = new RedirectHandler();
             var resourceHandler = new ResourceHandler();
 
-            var repo = "JVOKTA"; 
-            // var repo = "okta-terraform-config";
+            //var repo = "JVOKTA"; 
+             var repo = "okta-terraform-config";
 
             var module = "nonprod";
             //var module = "prod";
 
             // Filters
-            var environmentFilter = Enums.Environment.Development;
+            var environmentFilter = Enums.Environment.Integration;
             var resourceFilter = "okta_app_oauth";
             var nameFilter = "SwaggerUI";
-            var domainFilter = "book";
+            var domainFilter = "";
+            var productFilter = "Money.Tax.Api";
 
 
             Console.WriteLine($"Running against {module}...");
@@ -38,7 +39,8 @@ namespace OktaAutomation
             var swaggerResources = managedResources.Resources.Values.Where(x =>
                 x.Type == resourceFilter
                 && x.Name.Contains(nameFilter, StringComparison.OrdinalIgnoreCase)
-                && x.Position.FileName.Contains($"-{domainFilter}", StringComparison.OrdinalIgnoreCase)
+                && (!string.IsNullOrEmpty(productFilter) && x.Position.FileName.Contains(productFilter, StringComparison.OrdinalIgnoreCase))
+                && (!string.IsNullOrEmpty(domainFilter) && x.Position.FileName.Contains(domainFilter, StringComparison.OrdinalIgnoreCase))
                 && x.Position.FileName.Contains(environmentFilter.ToRoutingPrefix(), StringComparison.OrdinalIgnoreCase));
 
             var groupedResources = swaggerResources.OrderBy(x => x.Position.LineNumber).GroupBy(x => x.Position.FileName);

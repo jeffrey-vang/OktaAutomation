@@ -73,7 +73,8 @@ namespace OktaAutomation.Application
 
         private static string GetRedirectUri(Enums.Environment env, string component, string system = "defaultsystem")
         {
-            return $"https://{env.ToRoutingPrefix()}{component}.{system}.chr.io/openapi/oauth2-redirect.html";
+            return "https://tax-api.tax.chr.io/openapi/oauth2-redirect.html";
+            //return $"https://{env.ToRoutingPrefix()}{component}.{system}.chr.io/openapi/oauth2-redirect.html";
         }
 
         private static string GetComponentName(List<string> resourceBlock)
