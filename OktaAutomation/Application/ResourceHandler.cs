@@ -3,7 +3,9 @@ using OktaAutomation.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,12 +18,13 @@ namespace OktaAutomation.Application
             var configExists = File.Exists(outputPath);
             if (!configExists)
             {
+                var fileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "terraform-config-inspect.exe");
                 var outputStream = new StreamWriter(outputPath);
                 var inspectProcess = new Process()
                 {
                     StartInfo = new ProcessStartInfo
                     {
-                        FileName = "terraform-config-inspect",
+                        FileName = fileName,
                         Arguments = $"--json {modulePath}",
                         RedirectStandardOutput = true,
                     }
