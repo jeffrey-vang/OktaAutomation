@@ -7,7 +7,7 @@ namespace OktaAutomation.Application
 {
     public class RedirectHandler
     {
-        public Result ApplyRedirect(Enums.Environment env, Resource resource, int offset)
+        public Result ApplyRedirect(Enums.Environment env, Resource resource, int offset, string redirect)
         {
             // Read File
             var lines = File.ReadAllLines(resource.Position.FileName);
@@ -18,7 +18,7 @@ namespace OktaAutomation.Application
 
             // Fetch Uri
             var component = GetComponentName(resourceBlock);
-            var uri = GetRedirectUri(env, component);
+            var uri = redirect;//GetRedirectUri(env, component);
 
             // Append Uri to Line
             if (resourceBlock.Any(x => x.Contains(uri)))
