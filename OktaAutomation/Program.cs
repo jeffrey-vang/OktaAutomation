@@ -1,7 +1,6 @@
 ﻿using OktaAutomation.Application;
 using OktaAutomation.Enums;
 using OktaAutomation.Extensions;
-using System.Linq;
 
 namespace OktaAutomation
 {
@@ -15,6 +14,7 @@ namespace OktaAutomation
         {
             var redirectHandler = new RedirectHandler();
             var resourceHandler = new ResourceHandler();
+            var groupAssignmentHandler = new GroupAssignmentHandler();
 
             var productList = File.ReadAllLines("Products.txt");
             var allProducts = new Dictionary<string, string>();
@@ -24,18 +24,16 @@ namespace OktaAutomation
                 allProducts.Add(productResult[0], productResult[1]);
             }
 
-            //var repo = "JVOKTA"; 
-             var repo = "okta-terraform-config";
+            var runFork = false;
+            var repo = runFork ? "JVOKTA" : "okta-terraform-config";
 
-            //var module = "nonprod";
-            var module = "prod";
+            var runNonProd = true;
+            var module = runNonProd ? "nonprod" : "prod";
 
             // Filters
-            var environmentFilter = Enums.Environment.Production;
+            var environmentFilter = Enums.Environment.Development;
             var resourceFilter = "okta_app_oauth";
             var nameFilter = "SwaggerUI";
-            var domainFilter = "";
-            var productFilter = true;
 
 
             Console.WriteLine($"Running against {module}...");
@@ -46,7 +44,6 @@ namespace OktaAutomation
             // Inspect Resources
             var managedResources = resourceHandler.InspectResources(modulePath, outputPath);
             var resources = managedResources.Resources.Values.Where(x => x.Type == resourceFilter);
-
             var swaggerResources = resources.Where(x => x.Name.Contains(nameFilter, StringComparison.OrdinalIgnoreCase));
             var environmentResources = swaggerResources.Where(x => 
                 x.Position.FileName.Contains(environmentFilter.ToRoutingPrefix(), StringComparison.OrdinalIgnoreCase));
@@ -57,7 +54,7 @@ namespace OktaAutomation
 
             // Missed Resources
             var productNames = productResources
-                .Select(x => GetResourceProductName(x.Position.FileName)).ToList();
+                .Select(x => x.ProductName).ToList();
             var missedResources = allProducts.Keys.Where(x => !productNames.Contains(x)).ToList();
 
             // Process groups with multiple resources in a single file - Order by line number.
@@ -66,10 +63,9 @@ namespace OktaAutomation
                 var offset = 0;
                 foreach (var resource in resourceGroup)
                 {
-                    Console.WriteLine($"Appending redirect for {resource.Name} in {resource.Position.FileName}");
+                    Console.WriteLine($"Appending redirect for {resource.ProductName} in {resource.Position.FileName}");
 
-                    var resourceProductName = GetResourceProductName(resource.Position.FileName);
-                    var redirect = allProducts.First(x => x.Key.Contains(resourceProductName)).Value;
+                    var redirect = allProducts.First(x => x.Key.Contains(resource.ProductName)).Value;
                     var envRedirect = $"https://{environmentFilter.ToRoutingPrefix()}{redirect}/openapi/oauth2-redirect.html";
 
                     var result = redirectHandler.ApplyRedirect(environmentFilter, resource, offset, envRedirect);
@@ -91,6 +87,33 @@ namespace OktaAutomation
                 }
             }
 
+            // Create TF Group Assignments
+            // Process groups with multiple resources in a single file - Order by line number.
+            foreach (var resourceGroup in groupedResources)
+            {
+                var offset = 0;
+                foreach (var resource in resourceGroup)
+                {
+                    Console.WriteLine($"Appending group assignment for {resource.ProductName} in {resource.Position.FileName}");
+
+                    var result = groupAssignmentHandler.ApplyGroup(environmentFilter, resource, offset);
+
+                    if (result == Result.Success)
+                    {
+                        writeCount++;
+                    }
+
+                    if (result == Result.Failed)
+                    {
+                        failedResources++;
+                    }
+
+                    if (result == Result.Skipped)
+                    {
+                        resourcesSkipped++;
+                    }
+                }
+            }
 
             Console.WriteLine($"Write Count: {writeCount}");
             Console.WriteLine($"Missed Products Count: {missedResources.Count()}");
@@ -99,7 +122,6 @@ namespace OktaAutomation
             {
                 Console.WriteLine($"Missed Product: {resource}");
             }
-
 
             Console.WriteLine($"Resource Count: {swaggerResources.Count()}");
             Console.WriteLine($"Failed Resources: {failedResources}");
@@ -113,13 +135,6 @@ namespace OktaAutomation
             var fileName = Path.GetFileName(filePath);
 
             return fileNames.Contains(fileName);
-        }
-
-        private static string GetResourceProductName(string resourcePath)
-        {
-            return Path.GetFileName(resourcePath)
-                        .Replace(".tf", string.Empty)
-                        .Split("-")[1];
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Reflection.Metadata.Ecma335;
 
 namespace OktaAutomation.Models
 {
@@ -12,5 +13,15 @@ namespace OktaAutomation.Models
 
         [JsonProperty("pos")]
         public Position Position { get; set; }
+
+        public string ProductName 
+        {
+            get 
+            {
+                return Path.GetFileName(this.Position.FileName)
+                            .Replace(".tf", string.Empty)
+                            .Split("-")[1];
+            }
+        }
     }
 }

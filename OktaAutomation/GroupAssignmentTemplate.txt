@@ -1,0 +1,13 @@
+﻿
+resource okta_app_group_assignments {{ResourceName}} {
+  app_id = okta_app_oauth.{{ResourceName}}.id
+  group {
+    id           = data.okta_group.globalallemployees.id
+    priority     = 2
+  }
+  group {
+    id           = data.okta_group.globalallcontractors.id
+    priority     = 1
+  }
+
+}

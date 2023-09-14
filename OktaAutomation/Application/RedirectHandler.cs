@@ -17,8 +17,8 @@ namespace OktaAutomation.Application
             var resourceBlock = orignalLines.SelectResource(position);
 
             // Fetch Uri
-            var component = GetComponentName(resourceBlock);
-            var uri = redirect;//GetRedirectUri(env, component);
+            //var component = GetComponentName(resourceBlock);
+            var uri = redirect; //GetRedirectUri(env, component);
 
             // Append Uri to Line
             if (resourceBlock.Any(x => x.Contains(uri)))
